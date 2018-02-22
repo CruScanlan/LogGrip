@@ -57,3 +57,10 @@ typings/
 # dotenv environment variables file
 .env
 
+# IDE settings
+.idea
+
+#Extra
+/Frontend/start.bat
+/Frontend/stop.bat
+/Frontend/read_logs.bat

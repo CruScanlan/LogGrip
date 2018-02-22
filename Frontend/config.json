@@ -1,0 +1,13 @@
+{
+  "logging": {
+    "logTimeZone": "Australia/Brisbane",
+    "TimeFormat": "D-M-YYYY H:m:s"
+  },
+  "auth": {
+    "enabled": false,
+    "user": "example",
+    "password": "example"
+  },
+  "env": "development",
+  "port": 3000
+}
