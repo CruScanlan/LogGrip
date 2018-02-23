@@ -1,0 +1,96 @@
+<!--
+ * CoreUI - Open Source Bootstrap Admin Template
+ * @version v1.0.0-alpha.4
+ * @link http://coreui.io
+ * Copyright (c) 2017 creativeLabs Łukasz Holeczek
+ * @license MIT
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
+
+    <title>Register | Data Logger</title>
+
+    <!-- Icons -->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/simple-line-icons.css" rel="stylesheet">
+
+    <!-- Main styles for this application -->
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="app flex-row align-items-center">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mx-4">
+                <div class="card-body p-4">
+                    <h1>Register</h1>
+                    <p class="text-muted">Create your account</p>
+                    <form action="/auth/register" method="POST">
+                        <%  if(error.fill){  %>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <strong>Error</strong> Please fill out all fields.
+                        </div>
+                        <%  }   %>
+
+                        <%  if(error.repeatpass){  %>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <strong>Error</strong> Password's do not match.
+                        </div>
+                        <%  }   %>
+
+                        <%  if(error.userexists){  %>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <strong>Error</strong> That username already exists.
+                        </div>
+                        <%  }   %>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-user"></i></span>
+                            </div>
+                            <input type="text" class="form-control" name="username" placeholder="Username">
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-lock"></i></span>
+                            </div>
+                            <input type="password" class="form-control" name="password" placeholder="Password">
+                        </div>
+
+                        <div class="input-group mb-4">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-lock"></i></span>
+                            </div>
+                            <input type="password" class="form-control" name="passwordRepeat" placeholder="Repeat password">
+                        </div>
+
+                        <button type="submit" class="btn btn-block btn-success">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap and necessary plugins -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/tether/dist/js/tether.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/popper.js/dist/popper.min.js"></script>
+
+</body>
+
+</html>

@@ -3,6 +3,14 @@
     "logTimeZone": "Australia/Brisbane",
     "TimeFormat": "D-M-YYYY H:m:s"
   },
+  "mysql": {
+    "host": "",
+    "user": "",
+    "password": "",
+    "database": "",
+    "multipleStatements": true,
+    "connectionLimit": 120
+  },
   "auth": {
     "enabled": false,
     "user": "example",

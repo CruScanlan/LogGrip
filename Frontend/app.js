@@ -5,10 +5,13 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const config = require('./config');
+let mysql = require('./models/mysql');
+mysql.start(config.mysql);
 
 const index = require('./routes/index');
 const auth = require('./routes/auth');
 const app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,6 +44,14 @@ app.use(function(err, req, res) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+process.on('uncaughtException', function(err) {
+    console.log(`UNCAUGHT EXCEPTION | ${err.stack}`);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.log(`UNHANDLED REJECTION | ${err.stack}`);
 });
 
 module.exports = app;

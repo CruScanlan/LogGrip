@@ -1,2 +1,4 @@
 /Frontend/public/bower_components/* linguist-vendored
-/Frontend/public/css/style.css linguist-vendored
+/Frontend/public/css/style.css linguist-detectable=false
+/Frontend/public/css/animate.css linguist-detectable=false
+/Frontend/public/scss/* linguist-detectable=false
