@@ -25,30 +25,21 @@
   <!-- Main styles for this application -->
   <link href="css/style.css" rel="stylesheet">
   <link href="css/customStyle.css" rel="stylesheet">
+  <link href="css/logging-home.css" rel="stylesheet">
 
 </head>
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
 <header class="app-header navbar">
-  <button class="navbar-toggler mobile-sidebar-toggler hidden-lg-up" type="button">☰</button>
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
   <a class="navbar-brand" href="#"></a>
-  <ul class="nav navbar-nav hidden-md-down">
-    <li class="nav-item">
-      <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
-    </li>
-  </ul>
+  <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
   <ul class="nav navbar-nav ml-auto">
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-        <span class="hidden-md-down">Temporary Name</span>
-      </a>
-      <div class="dropdown-menu dropdown-menu-right">
-        <div class="dropdown-header text-center">
-          <strong>Settings</strong>
-        </div>
-        <a class="dropdown-item" href="/auth/logout"><i class="fa fa-lock"></i> Logout</a>
-      </div>
-    </li>
   </ul>
 </header>
 
@@ -56,19 +47,67 @@
   <div class="sidebar">
     <nav class="sidebar-nav">
       <ul class="nav">
+        <li class="nav-title">
+          Logging
+        </li>
         <li class="nav-item">
-          <a class="nav-link" href="/"><i class="icon-speedometer"></i> Dashboard</a>
+          <a class="nav-link" href="/"><i class="icon-pencil"></i> Logging</a>
+        </li>
+
+        <li class="nav-title">
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/logout"><i class="fa fa-lock"></i> Logout</a>
         </li>
       </ul>
     </nav>
+
   </div>
 
   <!-- Main content -->
-  <main class="main">
+  <main class="main" style="margin-top: 20px">
     <div class="container-fluid">
-      <div class="animated fadeIn">
-        <div class="row" style="margin-top: 20px">
-
+      <div class="animated fade-in">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-header">
+                Logging Sessions
+              </div>
+              <div class="card-body">
+                <div class="logging-header">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-primary" id="btn-add-session" data-toggle="modal" data-target="#largeModal"><i class="fa fa-plus fa-lg mt-2 button-icon"></i> Add New</button>
+                    <input id="session-search" placeholder="Search..." autocomplete="off" class="form-control input-lg" type="text">
+                  </div>
+                </div>
+                <div class="logging-body">
+                  <div class="row logging-sessions">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-primary" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Add Logging Session</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>One fine body…</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save</button>
+          </div>
         </div>
       </div>
     </div>
@@ -76,8 +115,8 @@
 </div>
 
 <footer class="app-footer">
-  <span class="float-right">Powered by <a href="http://coreui.io">CoreUI</a>
-        </span>
+  <span><a href="http://coreui.io">CoreUI</a> © 2018 creativeLabs.</span>
+  <span class="ml-auto">Powered by <a href="http://coreui.io">CoreUI</a></span>
 </footer>
 
 <!-- Bootstrap and necessary plugins -->
@@ -89,6 +128,9 @@
 
 <!-- Plugins and scripts required by all views -->
 <script src="js/app.js"></script>
+<script src="js/loggingHome.js"></script>
+
+<script src="js/views/main.js"></script>
 
 </body>
 </html>

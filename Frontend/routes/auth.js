@@ -9,7 +9,10 @@ const router = express.Router();
 router.use(express.static(path.join(__dirname, '../public')));
 
 let auth = (req, res, next) => {
-    if(!config.auth.enabled) return next();
+    if(!config.auth.enabled) {
+        req.session.user = config.auth.testUser;
+        return next();
+    }
     if (req.session && req.session.user)
         return next();
     else
@@ -79,9 +82,8 @@ router.post('/register', async (req, res) => {
             return console.log(e);
         }
 
-        let db;
         try{
-            db = await mysql.query('INSERT INTO `users` (`userid`, `admin`, `user`, `pass`) VALUES (?, ?, ?, ?)', [uuid(), 0, req.body.username, hash]);
+            await mysql.query('INSERT INTO `users` (`userid`, `admin`, `user`, `pass`) VALUES (?, ?, ?, ?)', [uuid(), 0, req.body.username, hash]);
         } catch(e) {
             if(e.message.indexOf('ER_DUP_ENTRY') !== -1) return res.render('register', {error:{fill:false, repeatpass:false, userexists:true}});
             return console.log(e);

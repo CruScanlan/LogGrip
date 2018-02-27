@@ -10,6 +10,7 @@ mysql.start(config.mysql);
 
 const index = require('./routes/index');
 const auth = require('./routes/auth');
+const api = require('./routes/api.js');
 const app = express();
 
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth.pages);
+app.use('/api', api);
 app.use('/', index);
 
 // catch 404 and forward to error handler
