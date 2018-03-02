@@ -13,7 +13,6 @@ var doneTypingInterval = 350;
         clearTimeout(typingTimer);
     });
 
-
     loadSessions();
 })();
 
@@ -28,7 +27,7 @@ function loadSessions() {
         data: JSON.stringify(request),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(data){
+        success: function(data) {
             var sessionsHtml = "";
             for(var i=0; i<data.sessions.length; i++) {
                 var checked = !!data.sessions[i].enabled ? 'checked' : '';
