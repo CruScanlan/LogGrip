@@ -10,7 +10,7 @@ router.use(express.static(path.join(__dirname, '../public')));
 
 let auth = (req, res, next) => {
     if(!config.auth.enabled) {
-        req.session.user = config.auth.testUser;
+        req.session.user = config.auth.testUserId;
         return next();
     }
     if (req.session && req.session.user)
@@ -61,9 +61,10 @@ router.post('/login', async (req, res) => {
             return console.log(e);
         }
         if(!db.rows[0]) return returnBadLoginPass(res);
+        console.log(db.rows[0].userid);
 
         if(matched) {
-            req.session.user = req.body.user;
+            req.session.user = db.rows[0].userid;
             return res.redirect('/');
         }
         return returnBadLoginPass(res);

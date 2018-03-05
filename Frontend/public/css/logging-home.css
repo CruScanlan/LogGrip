@@ -5,3 +5,9 @@
 .session-add-col-btns {
     margin-top: 28px;
 }
+
+.session-logging-column {
+    border-top: 1px solid #000000;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
