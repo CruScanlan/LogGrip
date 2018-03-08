@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "node index.js"
+  },
+  "author": "Cru Scanlan",
+  "license": "MIT",
+  "dependencies": {
+    "serialport": "^6.1.1"
+  }
+}
