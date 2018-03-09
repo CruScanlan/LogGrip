@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('../../config.json');
 const path = require('path');
 const express = require('express');
 const bcrypt = require('bcrypt');

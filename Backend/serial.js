@@ -5,7 +5,7 @@ let serialPort = require('serialport');
  * Class for accessing serial data from the esp8266
  */
 class Serial extends EventEmitter {
-    constructor() {
+    constructor(options) {
         super();
         /**
          * The loaded ports
@@ -13,7 +13,10 @@ class Serial extends EventEmitter {
          */
         this.loadedPorts = [];
 
-
+        /**
+         * All ESP ports
+         * @type {Array}
+         */
         this.ports = [];
 
         /**
@@ -21,6 +24,18 @@ class Serial extends EventEmitter {
          * @type {Array<ReadLineParser>}
          */
         this.parsers = [];
+
+        /**
+         * The packet structure for the incoming data
+         * @type {Array}
+         */
+        this.packetStructure = options.packetStructure || [];
+
+        /**
+         * The chip names that can be used
+         * @type {Array}
+         */
+        this.chipNames = options.chipNames || [];
 
         /**
          * If auto port detection has started
@@ -44,8 +59,25 @@ class Serial extends EventEmitter {
             if(this.parsers[i].comName !== comName) continue;
             let parser = this.parsers[i];
             parser.on('data', (data) => {
-                this.emit('data', data);
+                let dataPoints = data.split(',');
+                let packet = {};
+                for(let j=0; j<dataPoints.length; j++) {
+                    packet[this.packetStructure[j]] = dataPoints[j];
+                }
+                this.emit('data', packet);
             });
+            parser.once('data', (data) => {
+                let dataPoints = data.split(',');
+                let packet = {};
+                for(let j=0; j<dataPoints.length; j++) {
+                    packet[this.packetStructure[j]] = dataPoints[j];
+                }
+                for(let j=0; j<this.loadedPorts.length; j++) {
+                    if(this.loadedPorts[j].path !== this.parsers[i].comName) continue;
+                    this.loadedPorts[j].chipId = packet.chipId;
+                }
+                this.parsers[i].chipId = packet.chipId;
+            })
         }
     }
 
@@ -96,7 +128,7 @@ class Serial extends EventEmitter {
                 if(err) return console.log(new Error(err)); //TODO: deal with error
                 let espPorts = []; //all esp board ports
                 for(let i=0; i<ports.length; i++) {
-                    if(ports[i].manufacturer === "Silicon Labs") {
+                    if(this.chipNames.includes(ports[i].manufacturer)) {
                         espPorts.push(ports[i]);
                     }
                 }
@@ -120,7 +152,8 @@ class Serial extends EventEmitter {
 
                 this.ports = espPorts;
                 for(let i=0; i<newPorts.length; i++) { //add the new ports
-                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 115200, autoOpen:false}));
+                    console.log(newPorts);
+                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 921600, autoOpen:false}));
                     try {
                         await this.openPort(newPorts[i].comName); //open new port
                     } catch(e) {
@@ -141,6 +174,7 @@ class Serial extends EventEmitter {
                             this.parsers.splice(j, 1);
                         }
                     }
+                    this.emit('close', oldPorts.comName);
                 }
             });
         },100)

@@ -6,7 +6,7 @@
 
 let app = require('../app');
 let debug = require('debug')('control-panel:server');
-let config = require('../config');
+let config = require('../../config');
 let http = require('http');
 
 /**

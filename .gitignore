@@ -65,4 +65,4 @@ typings/
 /Frontend/start.bat
 /Frontend/stop.bat
 /Frontend/read_logs.bat
-/Frontend/config.json
+config.json
