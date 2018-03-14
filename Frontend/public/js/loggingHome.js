@@ -1,5 +1,35 @@
 var typingTimer;
 var doneTypingInterval = 350;
+var boards = [
+    {
+        name: 'Test Board',
+        id: "efafc43a-0345-48c6-9413-e9de8be0356d",
+        sensors: [
+            {
+                name: "Test Sensor",
+                id: "6577b152-358e-43ce-950e-55dc60c1a879"
+            },
+            {
+                name: "Test Sensor 2",
+                id: "649c448b-9cbd-4389-9735-df838a89bdcd"
+            }
+        ]
+    },
+    {
+        name: 'Test Board 2 ',
+        id: "efafc43a-0345-48c6-9413-e9de8be0356dfdfd",
+        sensors: [
+            {
+                name: "Test Sensor Board 2",
+                id: "6577b152-358e-43ce-950e-55dc60dfc1a879"
+            },
+            {
+                name: "Test Sensor Board 2",
+                id: "649c448b-9cbd-4389-9735-df83df8a89bdcd"
+            }
+        ]
+    }
+];
 
 (function() {
     var sessionSearch = $('#session-search');
@@ -26,8 +56,52 @@ var doneTypingInterval = 350;
         }
         $('#session-logging-speed-samples').html(samples);
         $('#session-logging-speed-time').html(time);
-    })
+    });
+
+    $('#session-add-column-board-1').change(colBoardChange);
+
+    updateBoardsHtml();
 })();
+
+function colBoardChange(event) {
+    var id = event.target.id;
+    var colNo = id.substring(id.lastIndexOf('-')+1, id.length);
+    updateSensors(colNo);
+}
+
+function updateBoardsHtml() {
+    var noCols = $('#session-add-columns').children().length;
+    for(var i=0; i<noCols; i++) {
+        updateBoardHtml(i+1);
+    }
+}
+
+function updateBoardHtml(col) {
+    var options = '<option></option>';
+    for(var i=0; i<boards.length; i++) {
+        options += `
+            <option data-boardId="${boards[i].id}">${boards[i].name}</option>
+        `;
+    }
+    $('#session-add-column-board-'+col).html(options);
+}
+
+function updateSensors(colNo) {
+    var boardId = $('#session-add-column-board-'+colNo).find(":selected").attr('data-boardId');
+    var options = '';
+    for(var i=0; i<boards.length; i++) {
+        if(boards[i].id === boardId) {
+            var sensors = boards[i].sensors;
+            for(var j=0; j<sensors.length; j++) {
+                options += `
+                <option data-sensorId="${sensors[j].id}">${sensors[j].name}</option>
+            `;
+            }
+            break;
+        }
+    }
+    $('#session-add-column-sensor-'+colNo).html(options);
+}
 
 function loadSessions() {
     var request = {
@@ -77,31 +151,40 @@ function addSessionColumn() {
     columns.append(`
                   <div class="col-md-12 session-logging-column">
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label for="session-add-column-name-${colNumber}">Column Name - ${colNumber}</label>
                           <input class="form-control" id="session-add-column-name-${colNumber}" placeholder="Name..." type="text" maxlength="32" required>
                         </div>
                       </div>
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <div class="form-group">
-                          <label for="session-add-column-type-${colNumber}">Column Data Type - ${colNumber}</label>
-                          <select class="form-control" id="session-add-column-type-${colNumber}">
-                            <option selected>Text</option>
-                            <option>Integer</option>
-                            <option>Float</option>
+                          <label for="session-add-column-board-${colNumber}">Column Board - ${colNumber}</label>
+                          <select class="form-control" id="session-add-column-board-${colNumber}">
+                            
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="session-add-column-sensor-${colNumber}">Column Sensor - ${colNumber}</label>
+                          <select class="form-control" id="session-add-column-sensor-${colNumber}">
+                           
                           </select>
                         </div>
                       </div>
                       <div class="col-md-2 session-add-col-btns" id="session-add-col-btns-${colNumber}">
                         <div class="btn-group" role="group" id="session-add-col-btns">
-                          <button type="button" class="btn btn-danger" onclick="deleteSessionColumn();"><i class="fa fa-trash fa-lg mt-2 button-icon"></i></button>
+                        <button type="button" class="btn btn-danger" onclick="deleteSessionColumn();"><i class="fa fa-trash fa-lg mt-2 button-icon"></i></button>
                           <button type="button" class="btn btn-success" onclick="addSessionColumn();"><i class="fa fa-plus fa-lg mt-2 button-icon"></i></button>
                         </div>
                       </div>
                     </div>
                   </div>
-    `)
+    `);
+    $('#session-add-column-board-'+colNumber).change(colBoardChange);
+    updateBoardHtml(colNumber);
+    updateSensors(colNumber);
 }
 
 function deleteSessionColumn() {

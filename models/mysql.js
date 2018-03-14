@@ -1,4 +1,4 @@
-let mysqlModule = require('mysql');
+let mysqlModule = require('../Frontend/node_modules/mysql/index');
 
 module.exports = {
     /**

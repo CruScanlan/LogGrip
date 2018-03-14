@@ -81,6 +81,17 @@ class Serial extends EventEmitter {
         }
     }
 
+    async writePort(comName, data) {
+        for(let i=0; i<this.loadedPorts.length; i++) {
+            if(this.loadedPorts[i].path !== comName) continue;
+            if(!this.loadedPorts[i].isOpen) await this.openPort(comName);
+            this.loadedPorts[i].write(data, 'utf8');
+        }
+    }
+
+    startStream(comName) {
+        this.writePort(comName, "{stream on}");
+    }
 
     /**
      * Opens a port with comName and adds it to the parsers
@@ -152,20 +163,25 @@ class Serial extends EventEmitter {
 
                 this.ports = espPorts;
                 for(let i=0; i<newPorts.length; i++) { //add the new ports
-                    console.log(newPorts);
-                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 921600, autoOpen:false}));
+                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 115200, autoOpen:false}));
                     try {
                         await this.openPort(newPorts[i].comName); //open new port
                     } catch(e) {
                         return console.log(e); //TODO: deal with error
                     }
                     this.readPort(newPorts[i].comName); //read the new port
+                    this.startStream(newPorts[i].comName);
+                    this.emit('open', {
+                        comName: newPorts[i].comName,
+                    })
                 }
 
                 //remove all old ports
                 for(let i=0; i<oldPorts.length; i++) {
+                    let chipId = null;
                     for(let j=0; j<this.loadedPorts.length; j++) { //remove old loaded ports
                         if(oldPorts[i].comName === this.loadedPorts[j].path) {
+                            chipId = this.loadedPorts[j].chipId;
                             this.loadedPorts.splice(j, 1);
                         }
                     }
@@ -174,7 +190,10 @@ class Serial extends EventEmitter {
                             this.parsers.splice(j, 1);
                         }
                     }
-                    this.emit('close', oldPorts.comName);
+                    this.emit('close', {
+                        comName: oldPorts[i].comName,
+                        chipId
+                    });
                 }
             });
         },100)

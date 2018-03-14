@@ -1,4 +1,4 @@
-let mysql = require('../../models/mysql');
+let mysql = require('../../../models/mysql');
 let auth = require('../auth').auth;
 let uuid = require('uuid/v4');
 let express = require('express');
