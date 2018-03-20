@@ -81,16 +81,18 @@ class Serial extends EventEmitter {
         }
     }
 
+    /**
+     * Writes data to an open port in utf8
+     * @param comName
+     * @param data
+     * @returns {Promise<void>}
+     */
     async writePort(comName, data) {
         for(let i=0; i<this.loadedPorts.length; i++) {
             if(this.loadedPorts[i].path !== comName) continue;
             if(!this.loadedPorts[i].isOpen) await this.openPort(comName);
             this.loadedPorts[i].write(data, 'utf8');
         }
-    }
-
-    startStream(comName) {
-        this.writePort(comName, "{stream on}");
     }
 
     /**
@@ -170,7 +172,6 @@ class Serial extends EventEmitter {
                         return console.log(e); //TODO: deal with error
                     }
                     this.readPort(newPorts[i].comName); //read the new port
-                    this.startStream(newPorts[i].comName);
                     this.emit('open', {
                         comName: newPorts[i].comName,
                     })

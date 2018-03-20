@@ -1,0 +1,163 @@
+<!--
+ * CoreUI - Open Source Bootstrap Admin Template
+ * @version v1.0.0-alpha.4
+ * @link http://coreui.io
+ * Copyright (c) 2017 creativeLabs Łukasz Holeczek
+ * @license MIT
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,AngularJS,Angular,Angular2,jQuery,CSS,HTML,RWD,Dashboard">
+    <link rel="shortcut icon" href="img/favicon.png">
+
+    <title> <%= sessionName %> | Data Logger</title>
+
+    <!-- Icons -->
+    <link href="bower_components/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="bower_components/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="bower_components/animate.css/animate.min.css" rel="stylesheet">
+
+    <!-- Main styles for this application -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/customStyle.css" rel="stylesheet">
+</head>
+
+<body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
+<header class="app-header navbar">
+    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/"></a>
+    <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <ul class="nav navbar-nav ml-auto">
+    </ul>
+</header>
+
+<div class="app-body">
+    <div class="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav">
+                <li class="nav-title">
+                    Logging
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="icon-pencil"></i> Logging</a>
+                </li>
+
+                <li class="nav-title">
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/auth/logout"><i class="fa fa-lock"></i> Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
+    <!-- Main content -->
+    <main class="main" style="margin-top: 20px">
+        <div class="container-fluid">
+            <div class="animated fade-in">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <%= sessionName %> - Session Settings
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Show Data
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <% for(var i=0; i<columns.length; i++) { %>
+                                                    <div class="col-md-12">
+                                                        <div class="form-check checkbox">
+                                                            <input class="form-check-input" id="showColumn_<%= columns[i] %>" type="checkbox" <%= (i<1) ? 'checked' : ''; %>>
+                                                            <label class="form-check-label" for="showColumn_<%= columns[i] %>">
+                                                                <%= columns[i] %>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Session Actions
+                                            </div>
+                                            <div class="card-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <%= sessionName %> - Session Graph
+                            </div>
+                            <div class="card-body">
+                                <div id="sessionGraph"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <%= sessionName %> - Session Data
+                            </div>
+                            <div class="card-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="app-footer">
+    <span><a href="http://coreui.io">CoreUI</a> © 2018 creativeLabs.</span>
+    <span class="ml-auto">Powered by <a href="http://coreui.io">CoreUI</a></span>
+</footer>
+
+<script>
+    var graphData = <%- JSON.stringify(graphData) %>;
+</script>
+
+<!-- Bootstrap and necessary plugins -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/tether/dist/js/tether.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/pace/pace.min.js"></script>
+<script src="bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js"></script>
+<script src="bower_components/highcharts/highstock.js"></script>
+
+<!-- Plugins and scripts required by all views -->
+<script src="js/app.js"></script>
+<script src="js/loggingSession.js"></script>
+<script src="js/views/main.js"></script>
+
+</body>
+</html>

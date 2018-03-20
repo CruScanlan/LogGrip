@@ -61,7 +61,6 @@ router.post('/login', async (req, res) => {
             return console.log(e);
         }
         if(!db.rows[0]) return returnBadLoginPass(res);
-        console.log(db.rows[0].userid);
 
         if(matched) {
             req.session.user = db.rows[0].userid;
