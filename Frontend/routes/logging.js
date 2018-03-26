@@ -24,14 +24,19 @@ router.get('/:sessionId', auth, async (req, res, next) => {
         let dataName = db2.fields[i].name;
         let series = {
             name: dataName,
-            data: []
+            data: [],
+            pointInterval: db.rows[0].interval
         };
         for(let j=0; j<db2.rows.length; j++) { //Get column data
             series.data.push(db2.rows[j][dataName]);
         }
         graphData.push(series);
     }
-    res.render('logging', {sessionName: db.rows[0].session_name, columns, graphData});
+    let chartConfig = {
+        interval: db.rows[0].interval,
+        graphData
+    };
+    res.render('logging', {sessionName: db.rows[0].session_name, columns, chartConfig});
 });
 
 module.exports = router;

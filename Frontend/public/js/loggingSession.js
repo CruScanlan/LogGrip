@@ -1,5 +1,5 @@
 let chartsDateTimeFormats = {
-    minTickInterval: 10,
+    minTickInterval: 75,
     millisecond: '%M:%S.%L',
     second: '%H:%M:%S',
     minute: '%H:%M',
@@ -14,15 +14,16 @@ Highcharts.stockChart('sessionGraph', {
     chart: {
         events: {
             load: function () {
+
             }
         }
     },
 
     rangeSelector: {
         buttons: [{
-            count: 50,
+            count: 100,
             type: 'millisecond',
-            text: '50mS'
+            text: '100mS'
         },{
             count: 200,
             type: 'millisecond',
@@ -47,15 +48,39 @@ Highcharts.stockChart('sessionGraph', {
         text: 'Session Data Graph'
     },
 
-    series: graphData,
+    series: chartConfig.graphData,
 
     tooltip: {
         dateTimeLabelFormats: chartsDateTimeFormats
     },
 
+    plotOptions: {
+        dataLabels: {
+            overflow: true
+        }
+    },
+
     xAxis: {
-        type: 'datetime',
-        tickInterval: 10,
-        dateTimeLabelFormats: chartsDateTimeFormats
+        type: 'time',
+        tickInterval: chartConfig.interval,
+        dateTimeLabelFormats: chartsDateTimeFormats,
+        tickPixelInterval: chartConfig.interval/2
     }
+});
+
+var columns = [{
+    title: 'Time',
+    field: 'time'
+}];
+var data = [];
+for(var i=0; i<chartConfig.graphData.length; i++) {
+    columns.push({
+        title: chartConfig.graphData[i].name,
+        field: chartConfig.graphData[i].name.match(/(?:\S)/g).join('').toLowerCase()
+    });
+}
+
+$('#sessionData').tabulator({
+    columns: columns,
+    data: data
 });
