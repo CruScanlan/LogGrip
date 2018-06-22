@@ -1,5 +1,5 @@
 const auth = require('../routes/auth').auth;
-let mysql = require('../../models/mysql');
+let mysql = require('../models/mysql');
 let express = require('express');
 let path = require('path');
 let router = express.Router();
@@ -7,36 +7,59 @@ let router = express.Router();
 router.use(express.static(path.join(__dirname, '../public')));
 
 router.get('/:sessionId', auth, async (req, res, next) => {
-    let db,db2;
+    let db, db2;
+
     try {
-        db = await mysql.query('SELECT `session_id`, `session_name`, `userid`, `interval`, `enabled` FROM log_sessions WHERE log_sessions.session_id = ?;', [req.params.sessionId]);
-        db2 = await mysql.query('SELECT * FROM ??;', ['logsession_'+db.rows[0].session_id]);
+        db = await mysql.query('SELECT log_sessions.session_name, log_sessions.user_id, log_sessions.`interval`, log_sessions_sensor_groups.visible, sensors.sensor_id, sensors.name AS sensor_name, sensors.connected AS sensor_connected FROM sensors INNER JOIN log_sessions_sensor_groups ON sensors.sensor_id = log_sessions_sensor_groups.sensor_id INNER JOIN log_sessions ON log_sessions_sensor_groups.log_session_id = log_sessions.session_id WHERE log_session_id = ? ORDER BY sensor_name;', [req.params.sessionId]);
+        db2 = await mysql.query('SET @cSensor = \'first\'; SELECT bResult.row_num * log_sessions.`interval` AS time, sensors.name, bResult.sensor_id, bResult.data FROM ( SELECT rowNumberForSensorID(aResult.sensor_id) AS row_num, aResult.row_id, aResult.session_id, aResult.sensor_id, aResult.data FROM ( SELECT log_session_data.row_id, log_session_data.session_id, log_session_data.sensor_id, log_session_data.data FROM log_session_data WHERE session_id = ? ORDER BY sensor_id ) AS aResult ORDER BY aResult.row_id ) AS bResult INNER JOIN log_sessions ON bResult.session_id = log_sessions.session_id INNER JOIN sensors ON bResult.sensor_id = sensors.sensor_id ORDER BY sensor_id, time;', [req.params.sessionId]);
     } catch(e) {
         return console.log(e);
     }
     if(db.rows.length < 1) return res.redirect('/');
-    if(db.rows[0].userid !== req.session.user) return  res.redirect('/');
+    if(db.rows[0].user_id !== req.session.user) return  res.redirect('/');
     let columns = [];
     let graphData = [];
-    for(let i=0; i<db2.fields.length; i++) { //Get the column names
-        if(db2.fields[i].name === 'row_id') continue;
-        columns.push(db2.fields[i].name);
-        let dataName = db2.fields[i].name;
-        let series = {
-            name: dataName,
+
+    //push column names and graph data objects with no data
+    for(let i=0; i<db.rows.length; i++) {
+        columns.push(db.rows[i].sensor_name);
+        graphData.push({
+            name: db.rows[i].sensor_name,
+            id: db.rows[i].sensor_id,
+            visible: db.rows[i].visible === 1 ,
             data: [],
-            pointInterval: db.rows[0].interval
-        };
-        for(let j=0; j<db2.rows.length; j++) { //Get column data
-            series.data.push(db2.rows[j][dataName]);
-        }
-        graphData.push(series);
+            pointInterval: db.rows[i].interval
+        });
     }
+
+    for(let i=0; i<graphData.length; i++) {
+        for(let j=0; j<db2.rows.length; j++) {
+            if(db2.rows[j].sensor_id !== graphData[i].id) continue;
+            graphData[i].data.push(db2.rows[j].data); //push data into the graph objects
+        }
+    }
+
+    let tableDataObject = {};
+    for(let i=0; i<db2.rows.length; i++) {
+        if(!tableDataObject[db2.rows[i].time]) tableDataObject[db2.rows[i].time] = {};
+        tableDataObject[db2.rows[i].time][db2.rows[i].name] = db2.rows[i].data;
+    }
+
+    let tableData = [];
+    let times = Object.keys(tableDataObject);
+    for(let i=0; i<times.length; i++) {
+        let data = tableDataObject[times[i]];
+        data.time = times[i];
+        tableData.push(data);
+    }
+
     let chartConfig = {
         interval: db.rows[0].interval,
         graphData
     };
-    res.render('logging', {sessionName: db.rows[0].session_name, columns, chartConfig});
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.render('logging', {sessionName: db.rows[0].session_name, columns, chartConfig, tableData, logSessionID: req.params.sessionId});
 });
 
 module.exports = router;

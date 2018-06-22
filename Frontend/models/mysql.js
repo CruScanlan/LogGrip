@@ -1,4 +1,4 @@
-let mysqlModule = require('../Frontend/node_modules/mysql/index');
+let mysqlModule = require('mysql');
 
 module.exports = {
     /**
@@ -21,18 +21,21 @@ module.exports = {
     query: async (sql, inserts) => {
         return new Promise((resolve, reject) => {
             //Check types
-            if(!sql) return reject(new Error("sql string missing"));
-            if(!inserts) return reject(new Error("inserts array missing"));
-            if(typeof sql !== "string") return reject(new TypeError("sql is not of type string, instead type:"+typeof sql));
-            if(typeof inserts !== "object" || !Array.isArray(inserts)) return reject(new TypeError("inserts is not of type object(array), instead type:"+typeof inserts));
+            if(!sql) return reject("sql string missing");
+            if(!inserts) return reject("inserts array missing");
+            if(typeof sql !== "string") return reject("sql is not of type string, instead type:"+typeof sql);
+            if(typeof inserts !== "object" || !Array.isArray(inserts)) return reject("inserts is not of type object(array), instead type:"+typeof inserts);
 
             let sqlString = mysqlModule.format(sql, inserts); //Format prepared statments
 
             module.exports.pool.getConnection((err, sqlConnection) => { //get a connection from the pool
-                if(err) return reject(new Error(`Error when getting connection from mysql pool | ${err.message}`));
+                if(err) return reject(`Error when getting connection from mysql pool | ${err.message}`);
                 sqlConnection.query(sqlString, (err, rows, fields) => { //use connection to query mysql
                     sqlConnection.release(); //release the connection back to the pool
-                    if(err) return reject(new Error(`Error when executing MSYQL query: ${sqlString} | ${err.message}`));
+                    if(err) return reject(`Error when executing MSYQL query: ${sqlString} | ${err.message}`);
+                    if(rows.length > 0) {
+                        if(rows[0].constructor.name === "OkPacket") rows = rows[1];
+                    }
                     return resolve({rows, fields, sqlString});
                 });
             })

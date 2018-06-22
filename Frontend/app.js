@@ -5,7 +5,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const config = require('../config');
-let mysql = require('../models/mysql');
+let mysql = require('./models/mysql');
 mysql.start(config.mysql);
 
 const index = require('./routes/index');

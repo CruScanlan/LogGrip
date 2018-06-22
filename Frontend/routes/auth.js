@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid/v4');
-let mysql = require('../../models/mysql');
+let mysql = require('../models/mysql');
 const router = express.Router();
 
 router.use(express.static(path.join(__dirname, '../public')));

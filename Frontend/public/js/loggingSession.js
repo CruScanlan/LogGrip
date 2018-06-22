@@ -1,4 +1,4 @@
-let chartsDateTimeFormats = {
+var chartsDateTimeFormats = {
     minTickInterval: 75,
     millisecond: '%M:%S.%L',
     second: '%H:%M:%S',
@@ -10,15 +10,7 @@ let chartsDateTimeFormats = {
     year: '%Y'
 };
 
-Highcharts.stockChart('sessionGraph', {
-    chart: {
-        events: {
-            load: function () {
-
-            }
-        }
-    },
-
+var chart = Highcharts.stockChart('sessionGraph', {
     rangeSelector: {
         buttons: [{
             count: 100,
@@ -70,17 +62,77 @@ Highcharts.stockChart('sessionGraph', {
 
 var columns = [{
     title: 'Time',
-    field: 'time'
+    field: 'time',
 }];
-var data = [];
+
 for(var i=0; i<chartConfig.graphData.length; i++) {
     columns.push({
         title: chartConfig.graphData[i].name,
-        field: chartConfig.graphData[i].name.match(/(?:\S)/g).join('').toLowerCase()
+        field: chartConfig.graphData[i].name,
+        visible: chartConfig.graphData[i].visible
     });
 }
 
-$('#sessionData').tabulator({
+var table = $('#sessionData').tabulator({
     columns: columns,
-    data: data
+    data: tableData,
+    resizableColumns: false,
 });
+
+function showHideSeriesToggeled(sensorID, sensorName) {
+    var seriesIndex;
+    for(var i=0; i<chart.series.length; i++) { //get graph series index for sensor
+        if(chart.series[i].userOptions.id === sensorID) {
+            seriesIndex = i;
+            break;
+        }
+    }
+    if(chart.series[seriesIndex].visible) chart.series[seriesIndex].hide();// = !chart.series[seriesIndex].visible;
+    else chart.series[seriesIndex].show();// = !chart.series[seriesIndex].visible;
+
+    table.tabulator("toggleColumn", sensorName);
+
+    var chartVisbible = chart.series[seriesIndex].visible;
+
+    var request = {
+        queryParams: {
+            sessionID: logSessionID,
+            sensorID,
+            visible: chartVisbible ? 1 : 0
+        }
+    };
+
+    $.ajax({
+        url: '/api/db/update-sensor-visibility',
+        type: 'POST',
+        data: JSON.stringify(request),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data) {
+            console.log(data);
+            if(!data.success) return notify('danger', 'Error', 'Could not save data visibility');
+        }
+    });
+}
+
+function notify(type,title,message){
+    $.notify({
+        title: title,
+        message: message
+    },{
+        element: 'body',
+        position: null,
+        type: type,
+        allow_dismiss: true,
+        newest_on_top: true,
+        placement: {
+            from: "top",
+            align: "center"
+        },
+        offset: 20,
+        spacing: 10,
+        z_index: 1100,
+        delay: 5000,
+        timer: 1000
+    });
+}
