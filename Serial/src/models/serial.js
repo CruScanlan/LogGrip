@@ -59,14 +59,18 @@ class Serial extends EventEmitter {
             if(this.parsers[i].comName !== comName) continue;
             let parser = this.parsers[i];
             parser.on('data', (data) => {
+                console.log(data);
+                /*
                 let dataPoints = data.split(',');
                 let packet = {};
                 for(let j=0; j<dataPoints.length; j++) {
                     packet[this.packetStructure[j]] = dataPoints[j];
                 }
                 this.emit('data', packet);
+                */
             });
             parser.once('data', (data) => {
+                /*
                 let dataPoints = data.split(',');
                 let packet = {};
                 for(let j=0; j<dataPoints.length; j++) {
@@ -77,6 +81,7 @@ class Serial extends EventEmitter {
                     this.loadedPorts[j].chipId = packet.chipId;
                 }
                 this.parsers[i].chipId = packet.chipId;
+                */
             })
         }
     }
@@ -165,7 +170,7 @@ class Serial extends EventEmitter {
 
                 this.ports = espPorts;
                 for(let i=0; i<newPorts.length; i++) { //add the new ports
-                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 115200, autoOpen:false}));
+                    this.loadedPorts.push(new serialPort(newPorts[i].comName, {baudRate: 921600, autoOpen:false}));
                     try {
                         await this.openPort(newPorts[i].comName); //open new port
                     } catch(e) {

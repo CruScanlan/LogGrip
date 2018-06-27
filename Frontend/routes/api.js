@@ -3,16 +3,18 @@ let router = express.Router();
 let mysql = require('../models/mysql');
 
 const loggingHome = require('./api/loggingHome');
-const EndpointRegistry = require('./api/EndpointRegistry');
-const dbEndpoints = require('../endpoints');
+const loggingSession = require('./api/loggingSession');
+const DBEndpointRegistry = require('./api/DBEndpointRegistry');
+const dbEndpoints = require('../DBEndpoints');
 
 router.use('/logging-home', loggingHome);
+router.use('/logging-session', loggingSession);
 
 router.get('/', (req, res) => {
     res.end('API Running!')
 });
 
-let endpointsRegistry = new EndpointRegistry(router, mysql);
-endpointsRegistry.registerEndpoints(dbEndpoints);
+let dBEndpointsRegistry = new DBEndpointRegistry(router, mysql);
+dBEndpointsRegistry.registerEndpoints(dbEndpoints);
 
 module.exports = router;

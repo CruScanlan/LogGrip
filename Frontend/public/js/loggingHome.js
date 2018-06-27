@@ -1,35 +1,6 @@
 var typingTimer;
 var doneTypingInterval = 350;
-var boards = [
-    {
-        name: 'Test Board',
-        id: "efafc43a-0345-48c6-9413-e9de8be0356d",
-        sensors: [
-            {
-                name: "Test Sensor",
-                id: "6577b152-358e-43ce-950e-55dc60c1a879"
-            },
-            {
-                name: "Test Sensor 2",
-                id: "649c448b-9cbd-4389-9735-df838a89bdcd"
-            }
-        ]
-    },
-    {
-        name: 'Test Board 2 ',
-        id: "efafc43a-0345-48c6-9413-e9de8be0356dfdfd",
-        sensors: [
-            {
-                name: "Test Sensor Board 2",
-                id: "6577b152-358e-43ce-950e-55dc60dfc1a879"
-            },
-            {
-                name: "Test Sensor Board 2",
-                id: "649c448b-9cbd-4389-9735-df83df8a89bdcd"
-            }
-        ]
-    }
-];
+var boards = [];
 
 (function() {
     var sessionSearch = $('#session-search');
@@ -44,6 +15,7 @@ var boards = [
     });
 
     loadSessions();
+    loadBoards();
 
     $('#session-add-interval').change(function(event) {
         var interval = event.target.value;
@@ -59,8 +31,6 @@ var boards = [
     });
 
     $('#session-add-column-board-1').change(colBoardChange);
-
-    updateBoardsHtml();
 })();
 
 function colBoardChange(event) {
@@ -137,6 +107,21 @@ function loadSessions() {
     });
 }
 
+function loadBoards() {
+    $.ajax({
+        url: '/api/db/get-available-sensors',
+        type: 'POST',
+        data: JSON.stringify({queryParams:{}}),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data) {
+            if(!data.success) return notify('danger', 'Error', 'Could not retrieve board data');
+            boards = data.boards;
+            updateBoardsHtml();
+        }
+    });
+}
+
 /*
     Logging Session Add Functions
  */
@@ -206,7 +191,7 @@ function addLoggingSession() {
     for(var i=0; i<noCols; i++) {
         sessionColumns.push({
             columnName: $(`#session-add-column-name-${i+1}`).val(),
-            columnType: $(`#session-add-column-type-${i+1}`).val()
+            columnSensorID: $(`#session-add-column-sensor-${i+1}`)[0].selectedOptions[0].dataset.sensorid
         });
     }
     var reqData = {
@@ -220,9 +205,9 @@ function addLoggingSession() {
     if(!reqData.sessionColumns || reqData.sessionColumns.length < 1) return notify('danger', 'Error', 'Session columns undefined');
     for(var i=0; i<noCols; i++) {
         if(!reqData.sessionColumns[i].columnName) return notify('danger', 'Error', `Session column name ${i+1} must be filled out`);
-        if(!reqData.sessionColumns[i].columnType) return notify('danger', 'Error', `Session column type ${i+1} must be filled out`);
+        if(!reqData.sessionColumns[i].columnSensorID) return notify('danger', 'Error', `Session column sensor ${i+1} must be filled out`);
     }
-    if(reqData.sessionInterval < 5 || reqData.sessionInterval > 600000) return notify('danger', 'Error', 'Logging interval must be between 5 and 600000');
+    if(reqData.sessionInterval < 75 || reqData.sessionInterval > 600000) return notify('danger', 'Error', 'Logging interval must be between 75 and 600000');
     $.ajax({
         url: '/api/logging-home/add-session',
         type: 'POST',

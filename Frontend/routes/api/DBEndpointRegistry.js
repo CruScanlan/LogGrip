@@ -37,7 +37,7 @@ class EndpointRegistry extends EventEmitter {
 
     _registerEndpoint(endpoint) {
         this.verifyEndpointData(endpoint);
-        this.router[endpoint.requestType](`/db/${endpoint.name}`, auth, async (req, res) => {
+        this.router.post(`/db/${endpoint.name}`, auth, async (req, res) => {
             if(!req.body.queryParams) return res.json({success: false, error: `queryParams was not defined`});
             if(typeof req.body.queryParams !== "object") return res.json({success: false, error: `queryParams was not of type object`});
             let reqQueryParamKeys = Object.keys(req.body.queryParams);
@@ -72,9 +72,6 @@ class EndpointRegistry extends EventEmitter {
         if(typeof endpoint !== 'object') throw new TypeError(`endpoint was not of type object`);
         if(!endpoint.name) throw new Error(`endpoint.name was not defined`);
         if(typeof endpoint.name !== 'string') throw TypeError(`endpoint.name was not of type string`);
-        if(!endpoint.requestType) throw new Error(`endpoint.requestType was not defined`);
-        if(typeof endpoint.requestType !== 'string') throw new TypeError(`endpoint.requestType was not of type string`);
-        if(['get', 'post'].indexOf(endpoint.requestType) === -1) throw new Error(`endpoint.requestType does not have a value of "get" or "post"`);
         if(!endpoint.queryParams) throw new Error(`endpoint.queryParams was not defined`);
         if(typeof endpoint.queryParams !== 'object') throw new TypeError(`endpoint.queryParams was not of type object`);
         let queryParamKeys = Object.keys(endpoint.queryParams);

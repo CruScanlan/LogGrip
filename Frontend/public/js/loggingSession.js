@@ -79,7 +79,7 @@ var table = $('#sessionData').tabulator({
     resizableColumns: false,
 });
 
-function showHideSeriesToggeled(sensorID, sensorName) {
+function showHideSeriesToggeled(sensorID, columnName) {
     var seriesIndex;
     for(var i=0; i<chart.series.length; i++) { //get graph series index for sensor
         if(chart.series[i].userOptions.id === sensorID) {
@@ -90,7 +90,7 @@ function showHideSeriesToggeled(sensorID, sensorName) {
     if(chart.series[seriesIndex].visible) chart.series[seriesIndex].hide();// = !chart.series[seriesIndex].visible;
     else chart.series[seriesIndex].show();// = !chart.series[seriesIndex].visible;
 
-    table.tabulator("toggleColumn", sensorName);
+    table.tabulator("toggleColumn", columnName);
 
     var chartVisbible = chart.series[seriesIndex].visible;
 
@@ -113,6 +113,49 @@ function showHideSeriesToggeled(sensorID, sensorName) {
             if(!data.success) return notify('danger', 'Error', 'Could not save data visibility');
         }
     });
+}
+
+function deleteLoggingSession(sessionID) {
+    swal({
+            title: "Are you sure to want to delete the logging session?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true
+        },
+        function(){
+            $.ajax({
+                url: '/api/logging-session/delete-session',
+                type: 'POST',
+                data: JSON.stringify({sessionID}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    if(!data.success) {
+                        return swal({
+                                title: "Error",
+                                text: "There was an error deleting the logging session",
+                                type: "danger",
+                                confirmButtonText: "Ok",
+                                closeOnConfirm: true
+                        });
+                    }
+                    return swal({
+                        title: "Success",
+                        text: "The logging session was deleted",
+                        type: "success",
+                        confirmButtonText: "Ok",
+                        closeOnConfirm: true
+                    }, function() {
+                        window.location = "/";
+                    });
+                }
+            });
+        });
+    return;
 }
 
 function notify(type,title,message){
